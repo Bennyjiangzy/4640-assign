@@ -9,7 +9,7 @@ variable "region" {
 #Set the default droplet count
 variable "droplet_count"{
     type = number
-    default = 3
+    default = 2
 }
 
 variable "droplet_size"{
