@@ -1,8 +1,14 @@
+# Create a new tag
+resource "digitalocean_tag" "database-tag" {
+  name = "Database"
+}
+
 resource "digitalocean_database_cluster" "mysql-example" {
   name       = "example-mysql-cluster"
   engine     = "mysql"
   version    = 8
   size       = "db-s-1vcpu-1gb"
+  tags       = [digitalocean_tag.database-tag.id]
   region     = var.region
   node_count = 1
 

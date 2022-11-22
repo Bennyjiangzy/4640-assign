@@ -4,7 +4,6 @@ resource "digitalocean_tag" "do-tag" {
 }
 
 
-
 # Create a new Web Droplet in the sfo3 region
 resource "digitalocean_droplet" "web" {
   image    = var.droplet_image
@@ -61,58 +60,46 @@ resource "digitalocean_firewall" "web" {
     inbound_rule {
         protocol = "tcp"
         port_range = "1-65535"
-        source_addresses = [digitalocean_vpc.web-vpc.ip_range]
+        source_tags = [digitalocean_tag.database-tag.id]
+        source_load_balancer_uids = [digitalocean_loadbalancer.public.id]
+        source_addresses = [digitalocean_droplet.bastion.ipv4_address_private]
     }
 
     inbound_rule {
         protocol = "udp"
         port_range = "1-65535"
-        source_addresses = [digitalocean_vpc.web-vpc.ip_range]
+        source_tags = [digitalocean_tag.database-tag.id]
+        source_load_balancer_uids = [digitalocean_loadbalancer.public.id]
+        source_addresses = [digitalocean_droplet.bastion.ipv4_address_private]
     }
 
     inbound_rule {
         protocol = "icmp"
-        source_addresses = [digitalocean_vpc.web-vpc.ip_range]
+        source_tags = [digitalocean_tag.database-tag.id]
+        source_load_balancer_uids = [digitalocean_loadbalancer.public.id]
+        source_addresses = [digitalocean_droplet.bastion.ipv4_address_private]
     }
 
     outbound_rule {
         protocol = "udp"
         port_range = "1-65535"
-        destination_addresses = [digitalocean_vpc.web-vpc.ip_range]
+        destination_tags = [digitalocean_tag.database-tag.id]
+        destination_load_balancer_uids = [digitalocean_loadbalancer.public.id] 
+        destination_addresses = [digitalocean_droplet.bastion.ipv4_address_private]
     }
 
     outbound_rule {
         protocol = "tcp"
         port_range = "1-65535"
-        destination_addresses = [digitalocean_vpc.web-vpc.ip_range]
+        destination_tags = [digitalocean_tag.database-tag.id]
+        destination_load_balancer_uids = [digitalocean_loadbalancer.public.id]
+        destination_addresses = [digitalocean_droplet.bastion.ipv4_address_private]
     }
 
     outbound_rule {
         protocol = "icmp"
-        destination_addresses = [digitalocean_vpc.web-vpc.ip_range]
-    }
-    # Selective Outbound Traffic Rules
-# 
-    # HTTP
-    outbound_rule {
-        protocol = "tcp"
-        port_range = "80"
-        destination_addresses = [digitalocean_loadbalancer.public.ip]
-    }
-
-    # HTTPS
-    outbound_rule {
-        protocol = "tcp"
-        port_range = "443"
-        destination_addresses = [digitalocean_loadbalancer.public.ip]
-    }
-
-    # ICMP (Ping)
-    outbound_rule {
-        protocol              = "icmp"
-        destination_addresses = ["0.0.0.0/0", "::/0"]
+        destination_tags = [digitalocean_tag.database-tag.id]
+        destination_load_balancer_uids = [digitalocean_loadbalancer.public.id]
+        destination_addresses = [digitalocean_droplet.bastion.ipv4_address_private]
     }
 }
-
-
-
